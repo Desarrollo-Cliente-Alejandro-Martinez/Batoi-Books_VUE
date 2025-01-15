@@ -1,6 +1,6 @@
 # Batoi-Books_VUE
 
-Repositorio del proyecto: Batoi Books usando VUE.
+Official repository of Alejandro Martínez Jiménez: Batoi Books using VUE.
 
 ## Recommended IDE Setup
 
@@ -16,14 +16,14 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 npm install
 ```
 
+### Starts the database
+
+```sh
+json-server db/batoibooks.json
+```
+
 ### Compile and Hot-Reload for Development
 
 ```sh
 npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
 ```

@@ -1,16 +1,11 @@
 <script setup>
-    // import { RouterLink, RouterView } from 'vue-router'
-    // import HelloWorld from './components/HelloWorld.vue'
+    import { RouterView } from 'vue-router';
 
     import { ref, onMounted } from 'vue';
     import axios from 'axios';
 
     import AppMenu from './components/AppMenu.vue';
-    import AppMessages from './components/AppMessages.vue'
-    import BooksList from './components/BooksList.vue';
-    import AddBook from './components/AddBook.vue';
-    import AppCart from './components/AppCart.vue';
-    import AppAbout from './components/AppAbout.vue';
+    import AppMessages from './components/AppMessages.vue';
     
 
     const API_URL = import.meta.env.VITE_DB_URL_API;
@@ -30,6 +25,15 @@
         books.value.push(newBook);
     }
 
+    function handleBookUpdated(updatedBook) {
+        
+        const index = books.value.findIndex(book => book.id === updatedBook.id);
+        
+        if (index !== -1) {
+            books.value[index] = updatedBook;
+        }
+    }
+
     onMounted(() => {
         fetchBooks();
     });
@@ -45,12 +49,12 @@
     </header>
 
     <AppMessages />
-    <BooksList :books="books" />
-    <AddBook @book-added="handleBookAdded" />
-    <AppCart />
-    <AppAbout />
 
-    <!-- <RouterView /> -->
+    <RouterView 
+        :books="books" 
+        @book-added="handleBookAdded"
+        @book-updated="handleBookUpdated"
+    />
 </template>
 
 <style scoped>

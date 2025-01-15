@@ -1,14 +1,19 @@
 <script>
     import BookItem from './BookItem.vue';
     import { store } from '../stores/store.js';
-    
+        
     export default {
         name: 'BooksList',
+        emits: ['bookAdded', 'bookUpdated'],
         components: {
             BookItem
         },
         props: {
-            books: Array
+            books: {
+                type: Array,
+                required: true,
+                default: () => []
+            }
         },
         computed: {
             totalBooks() {
@@ -20,7 +25,7 @@
                 console.log('Añadir al carrito:', book);
             },
             handleEdit(book) {
-                console.log('Editar libro: ', book);
+                this.$router.push({ name: 'edit', params: { id: book.id } });
             },
             handleDelete(book) {
                 if (confirm('¿Estás seguro que deseas eliminar el libro? Esta opción es permanente y no se puede deshacer.')) {
@@ -70,6 +75,7 @@
         flex-direction: column;
         align-content: center;
         flex-wrap: wrap;
+        padding-bottom: 25px;
 
         .divisor {
             width: 85%;

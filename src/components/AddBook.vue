@@ -3,9 +3,15 @@
     import { store } from '../stores/store.js';
 
     const API_URL = import.meta.env.VITE_DB_URL_API;
-    
+
     export default {
         name: 'AddBook',
+        props: {
+            id: {
+                type: String,
+                default: null
+            }
+        },
         data() {
             return {
                 book: {
@@ -22,22 +28,48 @@
                 modules: []
             }
         },
+        computed: {
+            isEditMode() {
+                return this.id !== null;
+            }
+        },
+        watch: {
+            'id'() {
+                this.fetchBook();
+            }
+        },
         methods: {
-            async addBook() {
+            async saveBook() {
                 try {
+
                     // Valida si el formulario es correcto
                     if (!this.validate()) return;
+                    
+                    // Comprobación si se está añadiendo o editando un libro
+                    if (this.isEditMode) {
+                        await axios.put(API_URL + '/books/' + this.id, this.book);
+                        
+                        this.$emit('book-updated', this.book);
 
-                    // Recoge la última ID y añade el libro mediante axios con el verbo POST
-                    await this.fetchLastId();
-                    const response = await axios.post(API_URL + '/books', this.book);
-                    store.addMessage('Libro creado correctamente.', 'success');
+                        store.addMessage('Libro actualizado correctamente.', 'success');
+                    } else {
+                        // Recoge la última ID y añade el libro mediante axios con el verbo POST
+                        await this.fetchLastId();
 
-                    // Emite a BookList el libro añadido recientemente
-                    this.$emit('book-added', response.data);
+                        const response = await axios.post(API_URL + '/books', this.book);
+                        
+                        // Emite a BookList el libro añadido recientemente
+                        this.$emit('book-added', response.data);
+                        
+                        store.addMessage('Libro creado correctamente.', 'success');
+                    }
 
                     // Resetea el formulario
-                    this.resetForm();                            
+                    this.resetForm();     
+                    
+                    // Redirección a la lista de libros
+                    this.$router.push('/');
+
                 } catch (error) {
                     console.error('Error al añadir el libro:', error);
                 }
@@ -56,9 +88,9 @@
                     
                     if (response.data.length > 0) {
                         const lastId = Math.max(...response.data.map(book => book.id));
-                        this.book.id = lastId + 1;
+                        this.book.id = lastId + 1 + "";
                     } else {
-                        this.book.id = 1;
+                        this.book.id = "1";
                     }
                     
                 } catch (error) {
@@ -95,20 +127,40 @@
                 return true;
             },
             resetForm() {
-                this.book = {
-                    id: "",
-                    moduleCode: "",
-                    publisher: "",
-                    price: 0,
-                    pages: 0,
-                    status: "new",
-                    photo: "",
-                    comments: "",
-                    soldDate: ""
-                };
-            }
+                if (this.isEditMode) {                    
+                    this.fetchBook();
+                } else {
+                    
+                    this.book = {
+                        id: "",
+                        moduleCode: "",
+                        publisher: "",
+                        price: 0,
+                        pages: 0,
+                        status: "new",
+                        photo: "",
+                        comments: "",
+                        soldDate: ""
+                    };
+                }
+            },
+            async fetchBook() {
+                if (this.isEditMode) {
+                    try {
+                        const response = await axios.get(`${API_URL}/books?id=${this.id}`);
+                        this.book = response.data[0];
+                    } catch (error) {
+                        console.error('Error al obtener el libro:', error);
+                    }
+                } else {
+                    this.resetForm();
+                }
+            },
         },
         mounted() {
+            if (this.isEditMode) {
+                this.fetchBook();
+            }
             this.fetchModules();
         }
     }
@@ -116,13 +168,13 @@
 
 <template>
     <div id="form">
-        <form id="bookForm" @submit.prevent="addBook">
-            <h1 id="title-form">Añadir libro</h1>
+        <form id="bookForm" @submit.prevent="saveBook" @reset="resetForm">
+            <h1 id="title-form">{{ isEditMode ? 'Editar libro' : 'Añadir libro' }}</h1>
 
             <!-- ID -->
-            <div id="campoID" class="input-container" hidden>
+            <div v-if="isEditMode" id="campoID" class="input-container" hidden>
                 <label for="id">ID:</label>
-                <input type="number" id="id" disabled>
+                <input type="number" id="id" v-model="book.id" disabled>
             </div>
 
             <!-- Módulo -->
@@ -181,7 +233,7 @@
 
             <!-- Botones -->
             <div class="form-buttons">
-                <button type="submit" id="submitButton">Añadir</button>
+                <button type="submit" id="submitButton">{{ isEditMode ? 'Guardar cambios' : 'Añadir' }}</button>
                 <button type="reset" id="resetButton">Reset</button>
             </div>
         </form>

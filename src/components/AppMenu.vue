@@ -1,4 +1,6 @@
 <script>
+    import { RouterLink } from 'vue-router';
+
     export default {
         name: 'AppMenu'
     }
@@ -7,9 +9,10 @@
 <template>
     <nav>
         <ul>
-            <li><a href="#list">Ver Libros</a></li>
-            <li><a href="#form">Añadir Libro</a></li>
-            <li><a href="#about">Acerca de</a></li>
+            <li><RouterLink to="/">Ver Libros</RouterLink></li>
+            <li><RouterLink to="/add-book">Añadir Libro</RouterLink></li>
+            <li><RouterLink to="/cart">Carrito </RouterLink></li>
+            <li><RouterLink to="/about">Acerca de</RouterLink></li>
         </ul>
     </nav>
 </template>

@@ -2350,7 +2350,7 @@
       "soldDate": ""
     },
     {
-      "id": 67,
+      "id": "67",
       "moduleCode": "0013",
       "publisher": "PEPEPEPEPEP",
       "price": 918236,
@@ -2361,7 +2361,7 @@
       "soldDate": ""
     },
     {
-      "id": 68,
+      "id": "68",
       "moduleCode": "0013",
       "publisher": "Jordi la mama",
       "price": 123,
@@ -2372,7 +2372,7 @@
       "soldDate": ""
     },
     {
-      "id": 69,
+      "id": "69",
       "moduleCode": "0026",
       "publisher": "123",
       "price": 123,
@@ -2383,7 +2383,7 @@
       "soldDate": ""
     },
     {
-      "id": 70,
+      "id": "70",
       "moduleCode": "0013",
       "publisher": "asd",
       "price": 123,
@@ -2394,7 +2394,7 @@
       "soldDate": ""
     },
     {
-      "id": 71,
+      "id": "71",
       "moduleCode": "0012",
       "publisher": "123",
       "price": 123,
@@ -2405,7 +2405,7 @@
       "soldDate": ""
     },
     {
-      "id": 72,
+      "id": "72",
       "moduleCode": "0014",
       "publisher": "PEPE",
       "price": 123,
@@ -2413,6 +2413,105 @@
       "status": "new",
       "photo": "",
       "comments": "",
+      "soldDate": ""
+    },
+    {
+      "id": "73",
+      "moduleCode": "0013",
+      "publisher": "asd",
+      "price": 123,
+      "pages": 123,
+      "status": "new",
+      "photo": "",
+      "comments": "",
+      "soldDate": ""
+    },
+    {
+      "id": "74",
+      "moduleCode": "0018",
+      "publisher": "123123",
+      "price": 123,
+      "pages": 123,
+      "status": "new",
+      "photo": "",
+      "comments": "",
+      "soldDate": ""
+    },
+    {
+      "id": "75",
+      "moduleCode": "0015",
+      "publisher": "123",
+      "price": 123,
+      "pages": 123,
+      "status": "new",
+      "photo": "",
+      "comments": "123",
+      "soldDate": ""
+    },
+    {
+      "id": "76",
+      "moduleCode": "0013",
+      "publisher": "123",
+      "price": 1230,
+      "pages": 123,
+      "status": "new",
+      "photo": "",
+      "comments": "123",
+      "soldDate": ""
+    },
+    {
+      "id": "77",
+      "moduleCode": "0015",
+      "publisher": "123",
+      "price": 123,
+      "pages": 123,
+      "status": "new",
+      "photo": "",
+      "comments": "123",
+      "soldDate": ""
+    },
+    {
+      "id": "78",
+      "moduleCode": "0011",
+      "publisher": "3",
+      "price": 1,
+      "pages": 1,
+      "status": "new",
+      "photo": "",
+      "comments": "1",
+      "soldDate": ""
+    },
+    {
+      "id": "79",
+      "moduleCode": "0020",
+      "publisher": "Auxilios",
+      "price": 4,
+      "pages": 4,
+      "status": "good",
+      "photo": "",
+      "comments": "",
+      "soldDate": ""
+    },
+    {
+      "id": "80",
+      "moduleCode": "0015",
+      "publisher": "123",
+      "price": 1230,
+      "pages": 3123,
+      "status": "new",
+      "photo": "",
+      "comments": "NO",
+      "soldDate": ""
+    },
+    {
+      "id": "81",
+      "moduleCode": "0018",
+      "publisher": "CACA",
+      "price": 123,
+      "pages": 123,
+      "status": "new",
+      "photo": "",
+      "comments": "123",
       "soldDate": ""
     }
   ]

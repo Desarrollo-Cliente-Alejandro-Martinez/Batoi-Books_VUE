@@ -1,9 +1,9 @@
 <script>
     import { store } from '../stores/store.js';
 
-    const clearMessage = (index) => {
-        store.messages.splice(index, 1);
-    };
+    // const clearMessage = (index) => {
+    //     store.messages.splice(index, 1);
+    // };
 
     export default {
         name: 'AppMessages',
@@ -47,6 +47,9 @@
         margin-bottom: 10px;
         border-radius: 5px;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .message.error {
@@ -62,6 +65,7 @@
     .message.success {
         background: #d1e7dd;
         color: #0f5132;
+        border: 1px #8bbda6 solid;
     }
 
     .message button {
