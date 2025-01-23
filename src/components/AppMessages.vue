@@ -55,11 +55,13 @@
     .message.error {
         background-color: #f8d7da;
         color: #721c24;
+        border: 1px solid #bf7178;
     }
 
     .message.info {
         background-color: #d1ecf1;
         color: #0c5460;
+        border: 1px solid #66a0ab;
     }
 
     .message.success {

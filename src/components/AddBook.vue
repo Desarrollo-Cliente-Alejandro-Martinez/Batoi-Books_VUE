@@ -40,6 +40,7 @@
         },
         methods: {
             async saveBook() {
+                
                 try {
 
                     // Valida si el formulario es correcto
@@ -71,7 +72,7 @@
                     this.$router.push('/');
 
                 } catch (error) {
-                    console.error('Error al añadir el libro:', error);
+                    store.addMessage('Ha habido un error inesperado y no se ha podido crear le libro. Inténtalo más tarde.', 'error');
                 }
             },
             async fetchModules() {
@@ -79,7 +80,7 @@
                     const response = await axios.get(API_URL + '/modules');
                     this.modules = response.data;
                 } catch (error) {
-                    console.error('Error al cargar los módulos:', error);
+                    store.addMessage('Ha habido un error inesperado y no se han podido obtener los módulos. Inténtalo más tarde.', 'error');
                 }
             },
             async fetchLastId() {
@@ -94,7 +95,7 @@
                     }
                     
                 } catch (error) {
-                    console.error('Error al obtener la última ID:', error);
+                    store.addMessage('Ha habido un error inesperado y no se han podido obtener el último ID utilizado. Inténtalo más tarde.', 'error');
                 }
             },
             validate() {
@@ -118,9 +119,7 @@
 
                 // Comprobación de estado
                 if (this.book.status !== 'new' && this.book.status !== 'good' && this.book.status !== 'bad') {
-                    store.addMessage('El estado no coincide con los establecidos.', 'error');
-                    console.log(this.book.status);
-                    
+                    store.addMessage('El estado no coincide con los establecidos.', 'error');                    
                     return false;
                 }
 
@@ -150,7 +149,7 @@
                         const response = await axios.get(`${API_URL}/books?id=${this.id}`);
                         this.book = response.data[0];
                     } catch (error) {
-                        console.error('Error al obtener el libro:', error);
+                        store.addMessage('Ha habido un error inesperado y no se ha podido obtener el libro a editar. Inténtalo más tarde.', 'error');
                     }
                 } else {
                     this.resetForm();

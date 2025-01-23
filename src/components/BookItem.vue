@@ -1,11 +1,26 @@
-<script>    
+<script>
+
+    import { useBooksStore } from '../stores/piniaStore.js';
+    import { computed } from 'vue';
+
     export default {
-        name: 'BooksItem',
+        name: 'BookItem',
         props: {
             book: {
                 type: Object,
                 required: true
             }
+        },
+        setup(props) {
+            const store = useBooksStore();
+
+            const moduleDescription = computed(() => store.getModuleDescription(props.book.moduleCode));
+            const isInCart = computed(() => store.isInCart(props.book.id));
+
+            const addToCart = () => store.addBookToCart(props.book);
+            const removeFromCart = () => store.removeBookFromCart(props.book.id);
+
+            return { moduleDescription, isInCart, addToCart, removeFromCart};
         },
         computed: {
             bookStatus() {
@@ -28,7 +43,7 @@
             class="card-image"
         >
         <div class="card-details">
-            <h3 class="card-title">Código: {{ book.moduleCode }} | ID: {{ book.id }}</h3>
+            <h3 class="card-title">{{ moduleDescription }} | ID: {{ book.id }}</h3>
             <h4 class="card-publisher">
                 <span class="label">Editorial:</span>
                 <span class="name">{{ book.publisher }}</span>
@@ -52,15 +67,7 @@
 
         </div>
         <div class="buttons">
-            <button @click="$emit('addToCart', this.book)">
-                <span class="material-icons">add_shopping_cart</span>
-            </button>
-            <button @click="$emit('edit', this.book)">
-                <span class="material-icons">edit</span>
-            </button>
-            <button @click="$emit('delete', this.book)">
-                <span class="material-icons">delete</span>
-            </button>
+            <slot class="buttons"></slot>
         </div>
     </div>
 </template>

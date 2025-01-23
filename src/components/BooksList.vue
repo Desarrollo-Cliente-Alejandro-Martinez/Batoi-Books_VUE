@@ -1,7 +1,10 @@
 <script>
+
     import BookItem from './BookItem.vue';
+    import { useBooksStore } from '../stores/piniaStore.js';
     import { store } from '../stores/store.js';
-        
+
+
     export default {
         name: 'BooksList',
         emits: ['bookAdded', 'bookUpdated'],
@@ -22,19 +25,30 @@
         },
         methods: {
             handleAddToCart(book) {
-                console.log('Añadir al carrito:', book);
+                const stores = useBooksStore();
+                
+                if (stores.isInCart(book.id)) {
+                    alert('Este libro ya está en el carrito.');
+                } else {
+                    stores.addBookToCart(book);
+                    store.addMessage('Libro añadido al carrito correctamente al carrito.', 'success');
+                }            
             },
             handleEdit(book) {
                 this.$router.push({ name: 'edit', params: { id: book.id } });
             },
             handleDelete(book) {
                 if (confirm('¿Estás seguro que deseas eliminar el libro? Esta opción es permanente y no se puede deshacer.')) {
+
                     const index = this.books.findIndex((b) => b.id === book.id);
-                    if (index !== -1) {
-                        this.books.splice(index, 1);
-                    }
-                    store.addMessage('Libro eliminado correctamente.', 'info');
+
+                    const piniaStore = useBooksStore();
+                    piniaStore.deleteBook(book.id, index);
                 }
+            },
+            isOnCart(bookId) {
+                const store = useBooksStore();
+                return store.isInCart(bookId);
             }
         }
     };
@@ -47,10 +61,23 @@
             v-for="(book, index) in this.books"
             :key="index"
             :book="book"
-            @addToCart="handleAddToCart"
-            @edit="handleEdit"
-            @delete="handleDelete"
-        />
+        >
+        
+            <!-- Add to cart -->
+            <button @click="handleAddToCart(book)" :disabled="isOnCart(book.id)" :class="{'disabled-btn': isOnCart(book.id)}">
+                <span class="material-icons">add_shopping_cart</span>
+            </button>
+
+            <!-- Edit -->
+            <button @click="handleEdit(book)">
+                <span class="material-icons">edit</span>
+            </button>
+
+            <!-- Delete -->
+            <button @click="handleDelete(book)">
+                <span class="material-icons">delete</span>
+            </button>
+        </BookItem>
     </div>
 
     <!-- Total de libros -->
@@ -62,14 +89,6 @@
 </template>
 
 <style scoped>
-    #list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 30px;
-        margin: 40px 30px 0px 30px;
-        padding-bottom: 30px;
-    }
-
     #total-books {
         display: flex;
         flex-direction: column;

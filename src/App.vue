@@ -1,41 +1,17 @@
 <script setup>
     import { RouterView } from 'vue-router';
-
-    import { ref, onMounted } from 'vue';
-    import axios from 'axios';
+    import { onMounted } from 'vue';
+    import { useBooksStore } from './stores/piniaStore';
 
     import AppMenu from './components/AppMenu.vue';
     import AppMessages from './components/AppMessages.vue';
-    
 
-    const API_URL = import.meta.env.VITE_DB_URL_API;
-
-    const books = ref([]);
-
-    async function fetchBooks() {
-        try {
-            const response = await axios.get(API_URL + '/books');
-            books.value = response.data;
-        } catch (error) {
-            console.error('Error al obtener los libros:', error);
-        }
-    }
-
-    function handleBookAdded(newBook) {
-        books.value.push(newBook);
-    }
-
-    function handleBookUpdated(updatedBook) {
-        
-        const index = books.value.findIndex(book => book.id === updatedBook.id);
-        
-        if (index !== -1) {
-            books.value[index] = updatedBook;
-        }
-    }
+    const store = useBooksStore();
 
     onMounted(() => {
-        fetchBooks();
+        store.fetchModules();
+        store.fetchBooks();
+        store.loadCartFromLocalStorage();
     });
 </script>
 
@@ -51,9 +27,9 @@
     <AppMessages />
 
     <RouterView 
-        :books="books" 
-        @book-added="handleBookAdded"
-        @book-updated="handleBookUpdated"
+        :books="store.books" 
+        @book-added="store.addBook"
+        @book-updated="store.updateBook"
     />
 </template>
 
