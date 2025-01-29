@@ -1,6 +1,8 @@
 <script>
     import axios from 'axios';
     import { store } from '../stores/store.js';
+    import { Form, Field, ErrorMessage } from "vee-validate";
+    import * as yup from 'yup';
 
     const API_URL = import.meta.env.VITE_DB_URL_API;
 
@@ -12,7 +14,31 @@
                 default: null
             }
         },
+        components: {
+            Form,
+            Field,
+            ErrorMessage
+        },
         data() {
+            const mySchema = yup.object().shape({
+                moduleCode: yup.string()
+                            .required('El módulo es obligatorio'),
+                publisher: yup.string()
+                            .required('La editorial es obligatoria'),
+                price: yup.number()
+                            .typeError('Debe de ser un número')
+                            .min(0, 'El precio no puede ser negativo')
+                            .required('El precio es obligatorio'),
+                pages: yup.number()
+                            .typeError('Debe de ser un número')
+                            .min(1, 'Debe haber al menos 1 página')
+                            .required('El número de páginas es obligatorio'),
+                status: yup.string()
+                            .oneOf(['new', 'good', 'bad'], 'Selecciona un estado válido')
+                            .required('El estado es obligatorio'),
+                comments: yup.string()
+                            .max(500, 'Máximo 500 caracteres')
+            });
             return {
                 book: {
                     id: "",
@@ -25,7 +51,8 @@
                     comments: "",
                     soldDate: ""
                 },
-                modules: []
+                modules: [],
+                mySchema
             }
         },
         computed: {
@@ -42,9 +69,6 @@
             async saveBook() {
                 
                 try {
-
-                    // Valida si el formulario es correcto
-                    if (!this.validate()) return;
                     
                     // Comprobación si se está añadiendo o editando un libro
                     if (this.isEditMode) {
@@ -66,8 +90,8 @@
                     }
 
                     // Resetea el formulario
-                    this.resetForm();     
-                    
+                    this.resetForm();   
+
                     // Redirección a la lista de libros
                     this.$router.push('/');
 
@@ -87,49 +111,28 @@
                 try {
                     const response = await axios.get(API_URL + '/books');
                     
-                    if (response.data.length > 0) {
-                        const lastId = Math.max(...response.data.map(book => book.id));
-                        this.book.id = lastId + 1 + "";
-                    } else {
-                        this.book.id = "1";
-                    }
-                    
+                    this.book.id = response.data.length > 0
+                        ? (Math.max(...response.data.map(book => book.id)) + 1).toString()
+                        : "1";
+
                 } catch (error) {
                     store.addMessage('Ha habido un error inesperado y no se han podido obtener el último ID utilizado. Inténtalo más tarde.', 'error');
                 }
             },
-            validate() {
-                // Comprobación de campos vacíos
-                if (!this.book.moduleCode || !this.book.publisher || !this.book.price || !this.book.pages || !this.book.status) {
-                    store.addMessage('No puede haber ningún campo vacío.', 'error');
-                    return false;
+            async fetchBook() {
+                if (this.isEditMode) {
+                    try {
+                        const response = await axios.get(`${API_URL}/books?id=${this.id}`);
+                        this.book = response.data[0];
+                    } catch (error) {
+                        store.addMessage('Ha habido un error inesperado y no se ha podido obtener el libro a editar. Inténtalo más tarde.', 'error');
+                    }
                 }
-
-                // Comprobación de precio negativo
-                if (this.book.price <= 0) {
-                    store.addMessage('El precio debe ser mayor que 0.', 'error');
-                    return false;
-                }
-
-                // Comprobación de páginas negativas o iguales a 0
-                if (this.book.pages <= 0) {
-                    store.addMessage('Las páginas deben ser mayores que 0.', 'error');
-                    return false;
-                }
-
-                // Comprobación de estado
-                if (this.book.status !== 'new' && this.book.status !== 'good' && this.book.status !== 'bad') {
-                    store.addMessage('El estado no coincide con los establecidos.', 'error');                    
-                    return false;
-                }
-
-                return true;
             },
             resetForm() {
                 if (this.isEditMode) {                    
                     this.fetchBook();
                 } else {
-                    
                     this.book = {
                         id: "",
                         moduleCode: "",
@@ -167,7 +170,7 @@
 
 <template>
     <div id="form">
-        <form id="bookForm" @submit.prevent="saveBook" @reset="resetForm">
+        <Form id="bookForm" @submit="saveBook" @reset="resetForm" :validation-schema="mySchema">
             <h1 id="title-form">{{ isEditMode ? 'Editar libro' : 'Añadir libro' }}</h1>
 
             <!-- ID -->
@@ -179,30 +182,34 @@
             <!-- Módulo -->
             <div class="input-container">
                 <label for="id-module">Módulo:</label>
-                <select id="id-module" v-model="book.moduleCode" required>
+                <Field as="select" name="moduleCode" id="id-module" v-model="book.moduleCode">
                     <option value="">- Selecciona un módulo -</option>
                     <option v-for="module in modules" :key="module.id" :value="module.code">
                         {{ module.cliteral }}
                     </option>
-                </select>
+                </Field>
+                <ErrorMessage name="moduleCode" class="error-message" />
             </div>
 
             <!-- Publisher -->
             <div class="input-container">
                 <label for="publisher">Editorial:</label>
-                <input type="text" id="publisher" v-model.trim="book.publisher" required>
+                <Field type="text" name="publisher" id="publisher" v-model.trim="book.publisher" />
+                <ErrorMessage name="publisher" class="error-message" />
             </div>
 
             <!-- Precio -->
             <div class="input-container">
                 <label for="price">Precio:</label>
-                <input type="number" id="price" v-model.number="book.price" step="0.01" min="0" required>
+                <Field type="number" name="price" id="price" v-model.number="book.price" step="0.01" min="0" />
+                <ErrorMessage name="price" class="error-message" />
             </div>
 
             <!-- Páginas -->
             <div class="input-container">
                 <label for="pages">Páginas:</label>
-                <input type="number" id="pages" v-model.number="book.pages" min="0" required>
+                <Field type="number" name="pages" id="pages" v-model.number="book.pages" min="0" />
+                <ErrorMessage name="pages" class="error-message" />
             </div>
 
             <!-- Estado (Radio Buttons) -->
@@ -210,24 +217,26 @@
                 <label>Estado:</label>
                 <div class="radio-buttons">
                     <label>
-                        <input type="radio" name="status" value="new" v-model="book.status" checked required>
+                        <Field type="radio" name="status" value="new" v-model="book.status" checked />
                         Nuevo
                     </label>
                     <label>
-                        <input type="radio" name="status" value="good" v-model="book.status" required>
+                        <Field type="radio" name="status" value="good" v-model="book.status" />
                         Bueno
                     </label>
                     <label>
-                        <input type="radio" name="status" value="bad" v-model="book.status" required>
+                        <Field type="radio" name="status" value="bad" v-model="book.status" />
                         Malo
                     </label>
                 </div>
+                <ErrorMessage name="status" class="error-message" />
             </div>
 
             <!-- Comentarios -->
             <div class="input-container">
                 <label for="comments">Comentarios:</label>
-                <textarea id="comments" v-model.trim="book.comments"></textarea>
+                <Field as="textarea" name="comments" id="comments" v-model.trim="book.comments" />
+                <ErrorMessage name="comments" class="error-message" />
             </div>
 
             <!-- Botones -->
@@ -235,7 +244,7 @@
                 <button type="submit" id="submitButton">{{ isEditMode ? 'Guardar cambios' : 'Añadir' }}</button>
                 <button type="reset" id="resetButton">Reset</button>
             </div>
-        </form>
+        </Form>
 
         <div id="errores"></div>
     </div>
@@ -367,5 +376,17 @@
         background-color: grey;
         padding: 20px;
         border-radius: 10px;
+    }
+
+    .error-message {
+        background-color: #ebcece;
+        color: #991b1b;
+        padding: 16px;
+        margin-bottom: 10px;
+        border: 1px solid #991b1b;
+        border-radius: 0.5rem;
+        /* display: flex; */
+        /* align-items: center; */
+        grid-column: 1 / 3;
     }
 </style>

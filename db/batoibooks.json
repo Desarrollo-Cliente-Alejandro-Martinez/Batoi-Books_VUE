@@ -2293,6 +2293,17 @@
       "photo": "",
       "comments": "1",
       "soldDate": ""
+    },
+    {
+      "id": "93",
+      "moduleCode": "0012",
+      "publisher": "asd",
+      "price": 4.12,
+      "pages": 20,
+      "status": "new",
+      "photo": "",
+      "comments": "asd",
+      "soldDate": ""
     }
   ]
 }
